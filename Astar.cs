@@ -23,18 +23,20 @@ public class Astar
                 //We found the destination and we can be sure (Because the the OrderBy above)
                 //That it's the most low cost option. 
                 var tile = checkTile;
-                Console.WriteLine("Retracing steps backwards...");
+                // Console.WriteLine("Retracing steps backwards...");
                 var pathTiles = new List<Tile>();
                 while (true)
                 {
 
-                    Console.WriteLine($"x: {tile.X} y: {tile.Y}");
+                    // Console.WriteLine($"x: {tile.X} y: {tile.Y}");
                     // Cant remove this dublicate check because it attempts to rewrite "B" space
                     pathTiles.Add(tile);
-                    if (map.map[tile.Y][tile.X] == ' ')
-                    {
-                        map.PlaceOnMap("*", tile.X, tile.Y);
-                    }
+
+                    // Prints the entire path, optional
+                    // if (map.map[tile.Y][tile.X] == ' ')
+                    // {
+                    //     map.PlaceOnMap("*", tile.X, tile.Y);
+                    // }
 
                     tile = tile.Parent;
                     if (tile == null)
