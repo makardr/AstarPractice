@@ -26,10 +26,12 @@ public class Character : Tile
     }
     public void UpdatePath()
     {
+
         start.X = X;
         start.Y = Y;
         // Console.WriteLine($"Calculating new path with start coordinates x: {start.X} y:{start.Y}");
         path = CalculatePath();
+
         // Remove first is neccessary because if the first elemement is the current position of the character and it makes it move to the current place indefinetly
         path.RemoveAt(0);
         // WritePath();
@@ -45,10 +47,14 @@ public class Character : Tile
     }
     public List<Tile> CalculatePath()
     {
+        try {
         Astar astar = new Astar(map);
         List<Tile> path = astar.CalculatePath(start, finish);
         path.Reverse();
         return path;
+        } catch (NoPathFoundException ex){
+            return this.path;
+        }
     }
     public void Move(int moveToX, int moveToY)
     {

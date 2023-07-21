@@ -134,8 +134,7 @@ public class Map
     }
 
     public void PrintMapSize(){
-        Console.WriteLine($"X is {map.Count - 1}");
-        Console.WriteLine($"Y is {map[0].Length - 1}");
+        Console.WriteLine($"X is {map[0].Length - 1} Y is {map.Count - 1}");
     }
 
 

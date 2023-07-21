@@ -1,3 +1,7 @@
+// G cost = distance from starting node
+// H cost = distance from end node
+// F cost = G cost + F cost
+
 public class Astar
 {
     public Map map;
@@ -75,8 +79,8 @@ public class Astar
                 }
             }
         }
-        Console.WriteLine("No Path Found!");
-        return new List<Tile>();
+        // Console.WriteLine("");
+        throw new NoPathFoundException("No Path Found!");
     }
     private List<Tile> GetWalkableTiles(Tile currentTile, Tile targetTile)
     {

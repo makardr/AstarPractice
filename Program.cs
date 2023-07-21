@@ -1,7 +1,4 @@
-﻿// G cost = distance from starting node
-// H cost = distance from end node
-// F cost = G cost + F cost
-class Program
+﻿class Program
 {
 
     public static void Main(string[] args)
@@ -13,7 +10,8 @@ class Program
         characters.CreateCharacter(map, 5, 0, 5, 3);
         characters.CreateCharacter(map, 3, 4, 3, 1);
         characters.CreateCharacter(map, 17, 5, 0, 0);
-
+        characters.CreateCharacter(map, 0, 1, 17, 7);
+        characters.CreateCharacter(map, 1, 1, 17, 4);
         while (true)
         {
             if (!characters.charactersList.Any(obj => obj.IsActive))
