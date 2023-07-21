@@ -3,25 +3,23 @@ public class Character : Tile
     Map map;
     public int destinationX;
     public int destinationY;
-    string characterIcon;
     Tile start;
     Tile finish;
     public bool IsActive = true;
     public List<Tile> path;
 
-    public Character(Map map, int X, int Y, int destinationX, int destinationY, string characterIcon)
+    public Character(Map map, int X, int Y, int destinationX, int destinationY)
     {
         this.map = map;
         this.X = X;
         this.Y = Y;
         this.destinationX = destinationX;
         this.destinationY = destinationY;
-        this.characterIcon = characterIcon;
         Spawn();
     }
     public void Spawn()
     {
-        start = map.PlaceTile(X, Y, characterIcon);
+        start = map.PlaceTile(X, Y, "A");
         finish = map.PlaceTile(destinationX, destinationY, "B");
         this.SetDistance(destinationX, destinationY);
         this.path = CalculatePath();
@@ -60,7 +58,7 @@ public class Character : Tile
         this.X = moveToX;
         this.Y = moveToY;
         // redraw character
-        map.PlaceOnMap(characterIcon, X, Y);
+        map.PlaceOnMap("A", X, Y);
         // map.PrintMap();
         // WritePath();
     }

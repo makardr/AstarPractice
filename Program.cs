@@ -8,20 +8,25 @@ class Program
 
     {
         Map map = new Map();
+        map.PrintMapSize();
+        Characters characters = new Characters();
+        characters.CreateCharacter(map, 5, 0, 5, 3);
+        characters.CreateCharacter(map, 3, 4, 3, 1);
+        characters.CreateCharacter(map, 17, 5, 0, 0);
 
-
-        Character character1 = new Character(map, 5, 0, 5, 3,"A1");
-        Character character2 = new Character(map, 3, 4, 3, 1,"A2");
         while (true)
         {
-            if (!character2.path.Any() & character1.path.Any())
+            if (!characters.charactersList.Any(obj => obj.IsActive))
             {
-                Console.WriteLine("Path finished");
+                Console.WriteLine("Pathfinding finished");
                 break;
             }
-            character1.MakeStep();
-            character2.MakeStep();
+            foreach(Character character in characters.charactersList){
+                character.MakeStep();
+            }
+            
             map.PrintMap();
+            Console.WriteLine("---------------------------------------");
         }
     }
 }

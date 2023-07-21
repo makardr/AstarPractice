@@ -13,12 +13,16 @@ public class Map
     {
         List<string> map = new List<string>
             {
-                "           ",
-                "  |        ",
-                "  -------  ",
-                "           ",
-                "           ",
-                "           "
+                "                  ",
+                "  |               ",
+                "  -------         ",
+                "                  ",
+                "              ----",
+                "              |   ",
+                "       --------   ",
+                "                  ",
+
+
             };
         return map;
     }
@@ -127,6 +131,11 @@ public class Map
         List<String> mapCopy = new List<string>(map);
         // PlaceOnMap(mapCopy, "X", tile.X, tile.Y);
         map.ForEach(x => Console.WriteLine(x));
+    }
+
+    public void PrintMapSize(){
+        Console.WriteLine($"X is {map.Count - 1}");
+        Console.WriteLine($"Y is {map[0].Length - 1}");
     }
 
 
