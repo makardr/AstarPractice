@@ -1,15 +1,17 @@
-﻿class Program
-{
+﻿
 
+class Program
+{
     public static void Main(string[] args)
     {
+        SilkWindow silkWindow = new SilkWindow();
+
         Map map = new Map();
-        map.PrintMapSize();
         Characters characters = new Characters();
 
-        characters.CreateCharacter(map, 1, 1, 10, 1,"A");
-        characters.CreateCharacter(map, 9, 1, 0, 1,"J");
-        characters.CreateCharacter(map, 2, 0, 5, 3,"X");
+        characters.CreateCharacter(map, 1, 1, 10, 1, "A");
+        characters.CreateCharacter(map, 9, 1, 0, 1, "J");
+        characters.CreateCharacter(map, 2, 0, 5, 3, "X");
 
         while (true)
         {
@@ -24,9 +26,9 @@
                 map.PrintMap();
                 Console.ReadLine();
             }
-            
+
             Console.WriteLine("---------------------------------------");
-            
+
         }
     }
 }
