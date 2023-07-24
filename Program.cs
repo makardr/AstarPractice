@@ -26,9 +26,8 @@ class Program
                 map.PrintMap();
                 Console.ReadLine();
             }
-
+            
             Console.WriteLine("---------------------------------------");
-
         }
     }
 }

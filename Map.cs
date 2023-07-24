@@ -5,6 +5,7 @@ public class Map
     public Map()
     {
         map = GenerateMap();
+        PrintMapSize();
     }
 
     public static List<string> GenerateMap()
