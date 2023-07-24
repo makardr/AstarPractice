@@ -7,22 +7,18 @@ public class Map
         map = GenerateMap();
     }
 
-
-
     public static List<string> GenerateMap()
     {
         List<string> map = new List<string>
             {
                 "                  ",
-                "  |               ",
-                "  -------         ",
+                "                  ",
+                "                  ",
                 "                  ",
                 "              ----",
                 "              |   ",
                 "       --------   ",
                 "                  ",
-
-
             };
         return map;
     }
@@ -133,7 +129,8 @@ public class Map
         map.ForEach(x => Console.WriteLine(x));
     }
 
-    public void PrintMapSize(){
+    public void PrintMapSize()
+    {
         Console.WriteLine($"X is {map[0].Length - 1} Y is {map.Count - 1}");
     }
 
