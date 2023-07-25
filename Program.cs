@@ -1,10 +1,8 @@
-﻿
-
-class Program
+﻿class Program
 {
     public static void Main(string[] args)
     {
-        SilkWindow silkWindow = new SilkWindow();
+        //SilkWindow silkWindow = new SilkWindow();
 
         Map map = new Map();
         Characters characters = new Characters();
@@ -24,9 +22,9 @@ class Program
             {
                 character.MakeStep();
                 map.PrintMap();
-                //Console.ReadLine();
+                
             }
-            
+            Console.ReadLine();
             Console.WriteLine("---------------------------------------");
         }
     }

@@ -2,9 +2,9 @@ public class Tile
 {
     public int X { get; set; }
     public int Y { get; set; }
-    public int Cost { get; set; }
+    public float Cost { get; set; }
     public int Distance { get; set; }
-    public int CostDistance => Cost + Distance;
+    public float CostDistance => Cost + Distance;
     public Tile Parent { get; set; }
 
     //The distance is essentially the estimated distance, ignoring walls to our target. 

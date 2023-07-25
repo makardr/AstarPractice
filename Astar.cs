@@ -90,6 +90,11 @@ public class Astar
                     new Tile { X = currentTile.X, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1},
                     new Tile { X = currentTile.X - 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 },
                     new Tile { X = currentTile.X + 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 },
+                    
+                    new Tile { X = currentTile.X-1, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f},
+                    new Tile { X = currentTile.X+1, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f},
+                    new Tile { X = currentTile.X - 1, Y = currentTile.Y+1, Parent = currentTile, Cost = currentTile.Cost + 1.5f},
+                    new Tile { X = currentTile.X + 1, Y = currentTile.Y-1, Parent = currentTile, Cost = currentTile.Cost + 1.5f},
                 };
 
         possibleTiles.ForEach(tile => tile.SetDistance(targetTile.X, targetTile.Y));

@@ -13,7 +13,13 @@ public class SilkWindow
     private static uint _vbo;
     private static uint _ebo; 
     private static float rotation = 0.0f;
-    
+    private static float[] vertices =
+    {
+        0.5f,  0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f
+    };
     public SilkWindow()
     {
         WindowOptions options = WindowOptions.Default;
@@ -142,16 +148,40 @@ public class SilkWindow
 
     private static void OnUpdate(double deltaTime)
     {
-
+        rotation += 0.01f;
+        
+        float sinRotation = (float)Math.Sin(rotation);
+        float[] verticies = {
+            -0.5f + sinRotation, -0.5f, 0.0f,
+            0.5f + sinRotation, -0.5f, 0.0f,
+            0.0f + sinRotation, 0.5f, 0.0f,
+            -0.5f + sinRotation,  0.5f, 0.0f
+        };
+        Console.WriteLine(verticies[0]);
     }
 
     private static unsafe void OnRender(double deltaTime)
     {
+        _vao = _gl.GenVertexArray();
+        _gl.BindVertexArray(_vao);
+        
+        _vbo = _gl.GenBuffer();
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
+        
+        _ebo = _gl.GenBuffer();
+        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _ebo);
+        
+        
         _gl.Clear(ClearBufferMask.ColorBufferBit);
+        
         _gl.BindVertexArray(_vao);
         _gl.UseProgram(_program);
         
         _gl.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, (void*) 0);
+        
+        _gl.BindVertexArray(0);
+        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, 0);
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
     }
 
     private static void KeyDown(IKeyboard keyboard, Key key, int keyCode)
