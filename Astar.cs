@@ -5,11 +5,11 @@
 public class Astar
 {
     public Map map;
+
     public Astar(Map map)
     {
         this.map = map;
     }
-
 
 
     public List<Tile> CalculatePath(Tile start, Tile finish)
@@ -31,7 +31,6 @@ public class Astar
                 var pathTiles = new List<Tile>();
                 while (true)
                 {
-
                     // Console.WriteLine($"x: {tile.X} y: {tile.Y}");
                     // Cant remove this dublicate check because it attempts to rewrite "B" space
                     pathTiles.Add(tile);
@@ -57,7 +56,6 @@ public class Astar
 
             foreach (var walkableTile in walkableTiles)
             {
-
                 //We have already visited this tile so we don't need to do so again!
                 if (visitedTiles.Any(x => x.X == walkableTile.X && x.Y == walkableTile.Y))
                     continue;
@@ -79,33 +77,46 @@ public class Astar
                 }
             }
         }
+
         // Console.WriteLine("");
         throw new NoPathFoundException("No Path Found!");
     }
+
     private List<Tile> GetWalkableTiles(Tile currentTile, Tile targetTile)
     {
         var possibleTiles = new List<Tile>()
-                {
-                    new Tile { X = currentTile.X, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1 },
-                    new Tile { X = currentTile.X, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1},
-                    new Tile { X = currentTile.X - 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 },
-                    new Tile { X = currentTile.X + 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 },
-                    
-                    new Tile { X = currentTile.X-1, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f},
-                    new Tile { X = currentTile.X+1, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f},
-                    new Tile { X = currentTile.X - 1, Y = currentTile.Y+1, Parent = currentTile, Cost = currentTile.Cost + 1.5f},
-                    new Tile { X = currentTile.X + 1, Y = currentTile.Y-1, Parent = currentTile, Cost = currentTile.Cost + 1.5f},
-                };
+        {
+            new Tile { X = currentTile.X, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
+            new Tile { X = currentTile.X, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
+            new Tile { X = currentTile.X - 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
+            new Tile { X = currentTile.X + 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
+            new Tile { X = currentTile.X - 1, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+            new Tile { X = currentTile.X + 1, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+            new Tile { X = currentTile.X - 1, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+            new Tile { X = currentTile.X + 1, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+        };
 
         possibleTiles.ForEach(tile => tile.SetDistance(targetTile.X, targetTile.Y));
 
         var maxX = map.map.First().Length - 1;
         var maxY = map.map.Count - 1;
-
+            //.Where(tile => map.map[tile.Y][tile.X] == ' ' || map.map[tile.Y][tile.X] == 'B' || map.map[tile.Y][tile.X] == '*')
         return possibleTiles
-                .Where(tile => tile.X >= 0 && tile.X <= maxX)
-                .Where(tile => tile.Y >= 0 && tile.Y <= maxY)
-                .Where(tile => map.map[tile.Y][tile.X] == ' ' || map.map[tile.Y][tile.X] == 'B')
-                .ToList();
+            .Where(tile => tile.X >= 0 && tile.X <= maxX)
+            .Where(tile => tile.Y >= 0 && tile.Y <= maxY)
+            .Where(tile => map.map[tile.Y][tile.X] == ' ' || map.map[tile.Y][tile.X] == 'B')
+            .ToList();
+    }
+
+    private float CalculateCost(Tile tile)
+    {
+        switch (map.map[tile.Y][tile.X])
+        {
+           case '*':
+               return 2f;
+           case 'A':
+               return 3f;
+        }
+        return 0f;
     }
 }

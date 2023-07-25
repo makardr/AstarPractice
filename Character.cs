@@ -23,10 +23,11 @@ public class Character : Tile
         this.SetDistance(destinationX, destinationY);
         this.path = CalculatePath();
     }
+
     public void UpdatePath()
     {
         start.X = X;
-        start.Y = Y;
+        start.Y = Y; 
         // Console.WriteLine($"Calculating new path with start coordinates x: {start.X} y:{start.Y}");
         path = CalculatePath();
 
@@ -39,9 +40,8 @@ public class Character : Tile
             Console.WriteLine($"Character {icon} became inactive");
             IsActive = false;
         }
-
-
     }
+
     public List<Tile> CalculatePath()
     {
         try
@@ -56,7 +56,8 @@ public class Character : Tile
             return this.path;
         }
     }
-    public void Move(int moveToX, int moveToY)
+
+    private void Move(int moveToX, int moveToY)
     {
         // delete itself from the old position on the map
         if (map.map[Y][X] == Char.Parse(icon))
@@ -73,15 +74,45 @@ public class Character : Tile
         // WritePath();
         // Console.WriteLine($"Character {icon}, moved to X {X},Y {Y}");
     }
+
     public void MakeStep()
     {
+        DrawArea();
         UpdatePath();
+        EraseArea();
         if (IsActive)
         {
-
             Move(path[0].X, path[0].Y);
         }
     }
+
+    private void DrawArea()
+    {
+        //Draw * around if tiles 
+    }
+
+    private void EraseArea()
+    {
+        //Remove * around if they exist
+    }
+
+    private Tuple<int, int> FindTilesAround()
+    {
+        //check if ' '
+        
+        //x:y
+        return Tuple.Create(0, 0);
+        
+        //new Tile { X = currentTile.X, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
+        //new Tile { X = currentTile.X, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
+        //new Tile { X = currentTile.X - 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
+        //new Tile { X = currentTile.X + 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
+        //new Tile { X = currentTile.X - 1, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+        //new Tile { X = currentTile.X + 1, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+        //new Tile { X = currentTile.X - 1, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+        //new Tile { X = currentTile.X + 1, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+    }
+    
     public void WritePath()
     {
         foreach (Tile tile in path)

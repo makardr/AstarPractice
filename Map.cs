@@ -1,7 +1,7 @@
 public class Map
 {
-
     public List<string> map;
+
     public Map()
     {
         map = GenerateMap();
@@ -11,18 +11,19 @@ public class Map
     public static List<string> GenerateMap()
     {
         List<string> map = new List<string>
-            {
-                "                  ",
-                "                  ",
-                "                  ",
-                "                  ",
-                "              ----",
-                "              |   ",
-                "       --------   ",
-                "                  ",
-            };
+        {
+            "                  ",
+            "                  ",
+            "                  ",
+            "                  ",
+            "              ----",
+            "              |   ",
+            "       --------   ",
+            "                  ",
+        };
         return map;
     }
+
     public Tile PlaceTile(int x, int y, string tile)
     {
         IsInBoundaries(map, x, y);
@@ -68,6 +69,7 @@ public class Map
         mapCopy[y] = newMapLine;
         PrintMap();
     }
+
     public void PrintMap()
     {
         map.ForEach(x => Console.WriteLine(x));
@@ -84,6 +86,7 @@ public class Map
         {
             throw new ArgumentException($"IsInBoundaries {x} or {y} less than zero");
         }
+
         // Count should begin from 0
         int listLength = map.Count - 1;
 
@@ -106,6 +109,7 @@ public class Map
             throw new ArgumentException($"{y} is not in {listLength}");
         }
     }
+
     public void PrintPath(List<Tile> path)
     {
         path.Reverse();
@@ -119,12 +123,10 @@ public class Map
     }
 
 
-
-
-
     public void MapOutput(Tile tile)
     {
-        Console.WriteLine($"Current tile coordinates are {tile.X} and {tile.Y}, tile cost is {tile.Cost} tile distance is {tile.Distance} and tile CostDistance is {tile.CostDistance}");
+        Console.WriteLine(
+            $"Current tile coordinates are {tile.X} and {tile.Y}, tile cost is {tile.Cost} tile distance is {tile.Distance} and tile CostDistance is {tile.CostDistance}");
         List<String> mapCopy = new List<string>(map);
         // PlaceOnMap(mapCopy, "X", tile.X, tile.Y);
         map.ForEach(x => Console.WriteLine(x));
@@ -134,6 +136,4 @@ public class Map
     {
         Console.WriteLine($"X is {map[0].Length - 1} Y is {map.Count - 1}");
     }
-
-
 }

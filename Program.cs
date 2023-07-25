@@ -18,12 +18,13 @@
                 Console.WriteLine("Pathfinding finished");
                 break;
             }
+
             foreach (Character character in characters.charactersList)
             {
                 character.MakeStep();
                 map.PrintMap();
-                
             }
+
             Console.ReadLine();
             Console.WriteLine("---------------------------------------");
         }
