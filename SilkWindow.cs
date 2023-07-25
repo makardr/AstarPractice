@@ -12,7 +12,7 @@ public class SilkWindow
     public SilkWindow()
     {
         WindowOptions options = WindowOptions.Default;
-                    options.Size = new Vector2D<int>(2400, 1600);
+                    options.Size = new Vector2D<int>(1270, 720);
                     options.Title = "Silk.NET program";
                     _window = Window.Create(options);
                     _window.Load += OnLoad;
@@ -64,7 +64,7 @@ public class SilkWindow
         uint vshader = gl.CreateShader(ShaderType.VertexShader);
         uint fshader = gl.CreateShader(ShaderType.FragmentShader);
         gl.ShaderSource(vshader, VertexShaderSource);
-        gl.ShaderSource(fshader, VertexShaderSource);
+        gl.ShaderSource(fshader, FragmentShaderSource);
         gl.CompileShader(vshader);
         gl.CompileShader(fshader);
 
@@ -80,6 +80,11 @@ public class SilkWindow
         gl.DeleteShader(vshader);
         gl.DeleteShader(fshader);
         
+        gl.GetProgram(program,GLEnum.LinkStatus,out var status);
+        if (status == 0)
+        {
+            Console.WriteLine($"Error linking shader{gl.GetProgramInfoLog(program)}");
+        }
         //Input
         for (int i = 0; i < input.Keyboards.Count; i++)
             input.Keyboards[i].KeyDown += KeyDown;
@@ -105,14 +110,14 @@ public class SilkWindow
         float[] vertexArray = new float[]
         {
             -0.5f, -0.5f , 0.0f, 
-            +0,5f, -0.5f, 0.0f,
+            +0,5f, +0.5f, 0.0f,
             0.0f, +0.5f, 0.0f
         };
 
         float[] colorArray = new float[]
         {
-            1.0f,0.0f,0.0f, 1.0f,
-            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 0.0f, 0.0f, 1.0f,
+            0.0f, 0.0f, 1.0f, 1.0f,
             0.0f, 1.0f, 0.0f, 1.0f
         };
 
@@ -136,14 +141,15 @@ public class SilkWindow
         
         //Binding arrayBuffer to 0 unbinds it
         gl.BindBuffer(GLEnum.ArrayBuffer,0);
+        gl.UseProgram(program);
         //If null uses bound element array
-        gl.DrawElements(GLEnum.Triangles,1, GLEnum.UnsignedInt, null);
+        gl.DrawElements(GLEnum.Triangles,3,GLEnum.UnsignedInt, null);
         
         gl.BindBuffer(GLEnum.ElementArrayBuffer,0);
         gl.BindVertexArray(vao);
         
         gl.DeleteBuffer(vertices);
-        gl.DeleteBuffer(indices);
+        gl.DeleteBuffer(colors);
         gl.DeleteBuffer(indices);
         gl.DeleteVertexArray(vao);
 

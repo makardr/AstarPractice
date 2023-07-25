@@ -24,7 +24,7 @@ class Program
             {
                 character.MakeStep();
                 map.PrintMap();
-                Console.ReadLine();
+                //Console.ReadLine();
             }
             
             Console.WriteLine("---------------------------------------");
