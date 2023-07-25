@@ -3,88 +3,138 @@ using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Silk.NET.OpenGL;
 
+
 public class SilkWindow
 {
     private static IWindow _window;
-    private static GL gl;
-    private static uint program;
-
+    private static GL _gl;
+    private static uint _program;
+    private static uint _vao;
+    private static uint _vbo;
+    private static uint _ebo; 
+    private static float rotation = 0.0f;
+    
     public SilkWindow()
     {
         WindowOptions options = WindowOptions.Default;
-                    options.Size = new Vector2D<int>(1270, 720);
-                    options.Title = "Silk.NET program";
-                    _window = Window.Create(options);
-                    _window.Load += OnLoad;
-                    _window.Update += OnUpdate;
-                    _window.Render += OnRender;
-                    _window.Run();
-    }
-    
-    private static readonly string VertexShaderSource = @"
-        #version 330 core
-        layout (location = 0) in vec3 vPos;
-		layout (location = 1) in vec4 vCol;
-
-		out vec4 outCol;
+        options.Size = new Vector2D<int>(1270, 720);
+        options.Title = "Silk.NET program";
+        _window = Window.Create(options);
         
-        void main()
-        {
-			outCol = vCol;
-            gl_Position = vec4(vPos.x, vPos.y, vPos.z, 1.0);
-        }
-        ";
+        _window.Load += OnLoad;
+        _window.Update += OnUpdate;
+        _window.Render += OnRender;
+        
+        _window.Run();
+    }
 
-
-    private static readonly string FragmentShaderSource = @"
-        #version 330 core
-        out vec4 FragColor;
-		
-		in vec4 outCol;
-
-        void main()
-        {
-            FragColor = outCol;
-        }
-        ";
-    
-    
-    
-
-    private static void OnLoad()
+    private static unsafe void OnLoad()
     {
         IInputContext input = _window.CreateInput();
-        gl = _window.CreateOpenGL();
-        gl.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        _gl = GL.GetApi(_window);
+        
+        _gl.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-        // Console.WriteLine("Load!");
+        _vao = _gl.GenVertexArray();
+        _gl.BindVertexArray(_vao);
         
+        _vbo = _gl.GenBuffer();
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
         
+        _ebo = _gl.GenBuffer();
+        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _ebo);
         
-        uint vshader = gl.CreateShader(ShaderType.VertexShader);
-        uint fshader = gl.CreateShader(ShaderType.FragmentShader);
-        gl.ShaderSource(vshader, VertexShaderSource);
-        gl.ShaderSource(fshader, FragmentShaderSource);
-        gl.CompileShader(vshader);
-        gl.CompileShader(fshader);
-
-        program = gl.CreateProgram();
-        gl.AttachShader(program,vshader);
-        gl.AttachShader(program,fshader);
-        
-        gl.LinkProgram(program);
-        
-        gl.DetachShader(program,vshader);
-        gl.DetachShader(program,fshader);
-        
-        gl.DeleteShader(vshader);
-        gl.DeleteShader(fshader);
-        
-        gl.GetProgram(program,GLEnum.LinkStatus,out var status);
-        if (status == 0)
+        float[] vertices =
         {
-            Console.WriteLine($"Error linking shader{gl.GetProgramInfoLog(program)}");
-        }
+            0.5f,  0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f,
+            -0.5f,  0.5f, 0.0f
+        };
+        
+        uint[] indices =
+        {
+            0u, 1u, 3u,
+            1u, 2u, 3u
+        };
+        
+        
+        // Initialize buffers the first time 
+        fixed (float* buf = vertices) _gl.BufferData(BufferTargetARB.ArrayBuffer, (nuint) (vertices.Length * sizeof(float)), buf, BufferUsageARB.StaticDraw);
+        fixed (uint* buf = indices) _gl.BufferData(BufferTargetARB.ElementArrayBuffer, (nuint) (indices.Length * sizeof(uint)), buf, BufferUsageARB.StaticDraw);
+        
+        
+        const string vertexCode = @"
+            #version 330 core
+
+            layout (location = 0) in vec3 aPosition;
+
+            void main()
+            {
+                gl_Position = vec4(aPosition, 1.0);
+            }";
+        
+        const string fragmentCode = @"
+            #version 330 core
+
+            out vec4 out_color;
+
+            void main()
+            {
+                out_color = vec4(1.0, 0.5, 0.2, 1.0);
+            }";
+        
+        uint vertexShader = _gl.CreateShader(ShaderType.VertexShader);
+        _gl.ShaderSource(vertexShader, vertexCode);
+        
+        _gl.CompileShader(vertexShader);
+        
+        // Debug shader log
+        _gl.GetShader(vertexShader, ShaderParameterName.CompileStatus, out int vStatus);
+        if (vStatus != (int) GLEnum.True)
+            throw new Exception("Vertex shader failed to compile: " + _gl.GetShaderInfoLog(vertexShader));
+        
+        
+        uint fragmentShader = _gl.CreateShader(ShaderType.FragmentShader);
+        _gl.ShaderSource(fragmentShader, fragmentCode);
+
+        _gl.CompileShader(fragmentShader);
+
+        _gl.GetShader(fragmentShader, ShaderParameterName.CompileStatus, out int fStatus);
+        if (fStatus != (int) GLEnum.True)
+            throw new Exception("Fragment shader failed to compile: " + _gl.GetShaderInfoLog(fragmentShader));
+
+        _program = _gl.CreateProgram();
+        
+        
+        _gl.AttachShader(_program, vertexShader);
+        _gl.AttachShader(_program, fragmentShader);
+
+        _gl.LinkProgram(_program);
+
+        _gl.GetProgram(_program, ProgramPropertyARB.LinkStatus, out int lStatus);
+        if (lStatus != (int) GLEnum.True)
+            throw new Exception("Program failed to link: " + _gl.GetProgramInfoLog(_program));
+        
+        _gl.DetachShader(_program, vertexShader);
+        _gl.DetachShader(_program, fragmentShader);
+        _gl.DeleteShader(vertexShader);
+        _gl.DeleteShader(fragmentShader);
+        
+        
+        const uint positionLoc = 0;
+        _gl.EnableVertexAttribArray(positionLoc);
+        _gl.VertexAttribPointer(positionLoc, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), (void*) 0);
+        
+        _gl.BindVertexArray(0);
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
+        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, 0);
+        
+        
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, 0); // Unbind buffer
+        _gl.EnableVertexAttribArray(0);
+        
+        // Console.WriteLine("Load!");
         //Input
         for (int i = 0; i < input.Keyboards.Count; i++)
             input.Keyboards[i].KeyDown += KeyDown;
@@ -92,72 +142,26 @@ public class SilkWindow
 
     private static void OnUpdate(double deltaTime)
     {
-        // Console.WriteLine("Update!");
+
     }
 
     private static unsafe void OnRender(double deltaTime)
     {
-        gl.Clear(ClearBufferMask.ColorBufferBit);
+        _gl.Clear(ClearBufferMask.ColorBufferBit);
+        _gl.BindVertexArray(_vao);
+        _gl.UseProgram(_program);
         
-        uint vao = gl.GenVertexArray();
-        gl.BindVertexArray(vao);
-        
-        uint vertices =  gl.GenBuffer();
-        uint colors = gl.GenBuffer();
-        uint indices = gl.GenBuffer();
-
-
-        float[] vertexArray = new float[]
-        {
-            -0.5f, -0.5f , 0.0f, 
-            +0,5f, +0.5f, 0.0f,
-            0.0f, +0.5f, 0.0f
-        };
-
-        float[] colorArray = new float[]
-        {
-            1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 1.0f, 1.0f,
-            0.0f, 1.0f, 0.0f, 1.0f
-        };
-
-        uint[] indexArray = new uint[]
-        {
-            0,1,2
-        }; 
-        
-        gl.BindBuffer(GLEnum.ArrayBuffer,vertices);
-        gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)vertexArray.AsSpan(), GLEnum.StaticDraw);
-        gl.VertexAttribPointer(0,3,GLEnum.Float,false,0, null);
-        gl.EnableVertexAttribArray(0);
-        
-        gl.BindBuffer(GLEnum.ArrayBuffer,colors);
-        gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)colorArray.AsSpan(), GLEnum.StaticDraw);
-        gl.VertexAttribPointer(1,3,GLEnum.Float,false,0, null);
-        gl.EnableVertexAttribArray(1);
-        
-        gl.BindBuffer(GLEnum.ElementArrayBuffer,indices);
-        gl.BufferData(GLEnum.ElementArrayBuffer, (ReadOnlySpan<uint>)indexArray.AsSpan(), GLEnum.StaticDraw);
-        
-        //Binding arrayBuffer to 0 unbinds it
-        gl.BindBuffer(GLEnum.ArrayBuffer,0);
-        gl.UseProgram(program);
-        //If null uses bound element array
-        gl.DrawElements(GLEnum.Triangles,3,GLEnum.UnsignedInt, null);
-        
-        gl.BindBuffer(GLEnum.ElementArrayBuffer,0);
-        gl.BindVertexArray(vao);
-        
-        gl.DeleteBuffer(vertices);
-        gl.DeleteBuffer(colors);
-        gl.DeleteBuffer(indices);
-        gl.DeleteVertexArray(vao);
-
+        _gl.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, (void*) 0);
     }
 
     private static void KeyDown(IKeyboard keyboard, Key key, int keyCode)
     {
         if (key == Key.Escape)
             _window.Close();
+    }
+
+    private static void DrawSquare()
+    {
+        
     }
 }

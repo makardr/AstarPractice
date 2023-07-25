@@ -51,7 +51,7 @@ public class Character : Tile
             path.Reverse();
             return path;
         }
-        catch (NoPathFoundException e)
+        catch (NoPathFoundException)
         {
             return this.path;
         }

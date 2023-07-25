@@ -30,3 +30,112 @@
                 {
                     Console.WriteLine("Input not recognised");
                 }
+                
+                
+                
+                
+                private static void OnLoad()
+                    {
+                        IInputContext input = _window.CreateInput();
+                        gl = GL.GetApi(_window);
+                        
+                        gl.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+                
+                        _vao = gl.GenVertexArray();
+                        gl.BindVertexArray(_vao);
+                        
+                        
+                        // Console.WriteLine("Load!");
+                        
+                        uint vshader = gl.CreateShader(ShaderType.VertexShader);
+                        uint fshader = gl.CreateShader(ShaderType.FragmentShader);
+                        gl.ShaderSource(vshader, VertexShaderSource);
+                        gl.ShaderSource(fshader, FragmentShaderSource);
+                        gl.CompileShader(vshader);
+                        gl.CompileShader(fshader);
+                
+                        program = gl.CreateProgram();
+                        gl.AttachShader(program,vshader);
+                        gl.AttachShader(program,fshader);
+                        
+                        gl.LinkProgram(program);
+                        
+                        gl.DetachShader(program,vshader);
+                        gl.DetachShader(program,fshader);
+                        
+                        gl.DeleteShader(vshader);
+                        gl.DeleteShader(fshader);
+                        
+                        
+                        
+                
+                        
+                        // Debug shader log
+                        gl.GetProgram(program,GLEnum.LinkStatus,out var status);
+                        if (status == 0)
+                        {
+                            Console.WriteLine($"Error linking shader{gl.GetProgramInfoLog(program)}");
+                        }
+                        //Input
+                        for (int i = 0; i < input.Keyboards.Count; i++)
+                            input.Keyboards[i].KeyDown += KeyDown;
+                    }
+                    
+                    
+                    
+                    
+        
+        uint vertices =  gl.GenBuffer();
+        uint colors = gl.GenBuffer();
+        uint indices = gl.GenBuffer();
+
+
+        float[] vertexArray = new float[]
+        {
+            -0.5f, -0.5f, 0.0f, // Bottom-left vertex
+            0.5f, -0.5f, 0.0f,  // Bottom-right vertex
+            0.5f, 0.5f, 0.0f,   // Top-right vertex
+            -0.5f, 0.5f, 0.0f   // Top-left vertex
+            
+        };
+
+        float[] colorArray = new float[]
+        {
+            1.0f, 0.0f, 0.0f, 1.0f, // Red color for the bottom-left vertex
+            0.0f, 1.0f, 0.0f, 1.0f, // Green color for the bottom-right vertex
+            0.0f, 0.0f, 1.0f, 1.0f, // Blue color for the top-right vertex
+            1.0f, 1.0f, 0.0f, 1.0f  // Yellow color for the top-left vertex
+        };
+
+        uint[] indexArray = new uint[]
+        {
+            0, 1, 2, // First triangle (bottom-right, top-right, top-left)
+            0, 2, 3  // Second triangle (bottom-left, top-left, bottom-right)
+        }; 
+        
+        gl.BindBuffer(GLEnum.ArrayBuffer,vertices);
+        gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)vertexArray.AsSpan(), GLEnum.StaticDraw);
+        gl.VertexAttribPointer(0,3,GLEnum.Float,false,0, null);
+        gl.EnableVertexAttribArray(0);
+        
+        gl.BindBuffer(GLEnum.ArrayBuffer,colors);
+        gl.BufferData(GLEnum.ArrayBuffer, (ReadOnlySpan<float>)colorArray.AsSpan(), GLEnum.StaticDraw);
+        gl.VertexAttribPointer(1,4,GLEnum.Float,false,0, null);
+        gl.EnableVertexAttribArray(1);
+        
+        gl.BindBuffer(GLEnum.ElementArrayBuffer,indices);
+        gl.BufferData(GLEnum.ElementArrayBuffer, (ReadOnlySpan<uint>)indexArray.AsSpan(), GLEnum.StaticDraw);
+        
+        //Binding arrayBuffer to 0 unbinds it
+        gl.BindBuffer(GLEnum.ArrayBuffer,0);
+        gl.UseProgram(program);
+        //If null uses bound element array
+        gl.DrawElements(GLEnum.Triangles,6,GLEnum.UnsignedInt, null);
+        
+        gl.BindBuffer(GLEnum.ElementArrayBuffer,0);
+        gl.BindVertexArray(_vao);
+        
+        gl.DeleteBuffer(vertices);
+        gl.DeleteBuffer(colors);
+        gl.DeleteBuffer(indices);
+        gl.DeleteVertexArray(_vao);
