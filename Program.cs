@@ -8,8 +8,8 @@
         Characters characters = new Characters();
 
         characters.CreateCharacter(map, 1, 1, 10, 1, "A");
-        characters.CreateCharacter(map, 9, 1, 0, 1, "J");
-        characters.CreateCharacter(map, 2, 0, 5, 3, "X");
+        characters.CreateCharacter(map, 9, 1, 0, 1, "A");
+        characters.CreateCharacter(map, 2, 0, 5, 3, "A");
 
         while (true)
         {
@@ -19,13 +19,15 @@
                 break;
             }
 
+            map.PrintMap();
             foreach (Character character in characters.charactersList)
             {
                 character.MakeStep();
                 map.PrintMap();
+                Console.ReadLine();
             }
 
-            Console.ReadLine();
+
             Console.WriteLine("---------------------------------------");
         }
     }

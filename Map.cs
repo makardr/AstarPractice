@@ -1,3 +1,5 @@
+using System.Text;
+
 public class Map
 {
     public List<string> map;
@@ -72,12 +74,29 @@ public class Map
 
     public void PrintMap()
     {
-        map.ForEach(x => Console.WriteLine(x));
+        List<string> mapCopy = new List<string>(map);
+        for (int c = 0; c < mapCopy.Count; c++)
+        {
+            StringBuilder sb = new StringBuilder(mapCopy[c]);
+            for (int i = 0; i < sb.Length; i++)
+            {
+                // Modify characters as needed
+                if (sb[i] == '*')
+                {
+                    sb[i] = ' ';
+                }
+            }
+
+            string modifiedString = sb.ToString();
+            mapCopy[c] = modifiedString;
+        }
+
+        mapCopy.ForEach(x => Console.WriteLine(x));
     }
 
-    public void PrintMap(List<string> mapCopy)
+    public void PrintMap(List<string> mapToPrint)
     {
-        mapCopy.ForEach(x => Console.WriteLine(x));
+        mapToPrint.ForEach(x => Console.WriteLine(x));
     }
 
     public static void IsInBoundaries(List<string> map, int x, int y)
@@ -110,6 +129,34 @@ public class Map
         }
     }
 
+    public bool IsInBoundaries(int x, int y)
+    {
+        if (x < 0 | y < 0)
+        {
+            return false;
+        }
+
+        // Count should begin from 0
+        int listLength = map.Count - 1;
+
+        if (listLength >= y)
+        {
+            int lineLength = map[y].Length - 1;
+            if (lineLength >= x)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public void PrintPath(List<Tile> path)
     {
         path.Reverse();
@@ -135,5 +182,18 @@ public class Map
     public void PrintMapSize()
     {
         Console.WriteLine($"X is {map[0].Length - 1} Y is {map.Count - 1}");
+    }
+
+    public bool TileAvailable(int x, int y)
+    {
+        if (IsInBoundaries(x, y))
+        {
+            if (map[y][x] == ' ' || map[y][x] == '*')
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

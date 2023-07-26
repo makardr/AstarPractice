@@ -1,21 +1,23 @@
 public class Character : Tile
 {
-    Map map;
-    public int destinationX;
-    public int destinationY;
-    public string icon;
-    Tile start;
-    Tile finish;
     public bool IsActive = true;
-    public List<Tile> path;
+    public int DestinationX;
+    public int DestinationY;
+
+    private string icon;
+    private Tile start;
+    private Tile finish;
+    private Map map;
+    private List<Tile> path;
+    private List<Tuple<int, int>> availableTilesList;
 
     public Character(Map map, int X, int Y, int destinationX, int destinationY, string icon)
     {
         this.map = map;
         this.X = X;
         this.Y = Y;
-        this.destinationX = destinationX;
-        this.destinationY = destinationY;
+        this.DestinationX = destinationX;
+        this.DestinationY = destinationY;
         this.icon = icon;
 
         start = map.PlaceTile(X, Y, icon);
@@ -24,10 +26,10 @@ public class Character : Tile
         this.path = CalculatePath();
     }
 
-    public void UpdatePath()
+    private void UpdatePath()
     {
         start.X = X;
-        start.Y = Y; 
+        start.Y = Y;
         // Console.WriteLine($"Calculating new path with start coordinates x: {start.X} y:{start.Y}");
         path = CalculatePath();
 
@@ -42,7 +44,7 @@ public class Character : Tile
         }
     }
 
-    public List<Tile> CalculatePath()
+    private List<Tile> CalculatePath()
     {
         try
         {
@@ -77,43 +79,75 @@ public class Character : Tile
 
     public void MakeStep()
     {
-        DrawArea();
-        UpdatePath();
-        EraseArea();
+        // Two IsActive checks are necessary because first updates IsActive state and if they were in the same if statement character would react at being Inactive too late
+        // and would attempt to move crashing the game. First IsActive is to improve performance by removing unnecessary calculations
+        if (IsActive)
+        {
+            // Before is active to delete tiles at an old place
+            EraseArea();
+            UpdatePath();
+        }
+
         if (IsActive)
         {
             Move(path[0].X, path[0].Y);
+            // After moving draw radius on new place
+            DrawArea();
         }
     }
 
     private void DrawArea()
     {
+        FindTilesAround();
         //Draw * around if tiles 
+        foreach (Tuple<int, int> tuple in availableTilesList)
+        {
+            map.PlaceOnMap("*", tuple.Item1, tuple.Item2);
+        }
     }
 
     private void EraseArea()
     {
+        FindTilesAround();
         //Remove * around if they exist
+        foreach (Tuple<int, int> tuple in availableTilesList)
+        {
+            map.PlaceOnMap(" ", tuple.Item1, tuple.Item2);
+        }
     }
 
-    private Tuple<int, int> FindTilesAround()
+    private void FindTilesAround()
     {
+        List<Tuple<int, int>> coordinatesList = CreateCoordinatesList();
+        availableTilesList = new List<Tuple<int, int>>();
         //check if ' '
-        
-        //x:y
-        return Tuple.Create(0, 0);
-        
-        //new Tile { X = currentTile.X, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
-        //new Tile { X = currentTile.X, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
-        //new Tile { X = currentTile.X - 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
-        //new Tile { X = currentTile.X + 1, Y = currentTile.Y, Parent = currentTile, Cost = currentTile.Cost + 1 + CalculateCost(currentTile)},
-        //new Tile { X = currentTile.X - 1, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
-        //new Tile { X = currentTile.X + 1, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
-        //new Tile { X = currentTile.X - 1, Y = currentTile.Y + 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
-        //new Tile { X = currentTile.X + 1, Y = currentTile.Y - 1, Parent = currentTile, Cost = currentTile.Cost + 1.5f + CalculateCost(currentTile)},
+
+
+        foreach (Tuple<int, int> point in coordinatesList)
+        {
+            if (map.TileAvailable(point.Item1, point.Item2))
+            {
+                availableTilesList.Add(new Tuple<int, int>(point.Item1, point.Item2));
+            }
+        }
     }
-    
-    public void WritePath()
+
+    private List<Tuple<int, int>> CreateCoordinatesList()
+    {
+        List<Tuple<int, int>> coordinatesList = new List<Tuple<int, int>>();
+        coordinatesList.Add(new Tuple<int, int>(X, Y - 1));
+        coordinatesList.Add(new Tuple<int, int>(X, Y + 1));
+        coordinatesList.Add(new Tuple<int, int>(X - 1, Y));
+        coordinatesList.Add(new Tuple<int, int>(X + 1, Y));
+        coordinatesList.Add(new Tuple<int, int>(X - 1, Y - 1));
+        coordinatesList.Add(new Tuple<int, int>(X + 1, Y + 1));
+        coordinatesList.Add(new Tuple<int, int>(X - 1, Y + 1));
+        coordinatesList.Add(new Tuple<int, int>(X + 1, Y - 1));
+
+        return coordinatesList;
+    }
+
+    private void WritePath()
     {
         foreach (Tile tile in path)
         {
