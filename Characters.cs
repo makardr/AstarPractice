@@ -7,9 +7,9 @@ public class Characters
         this.charactersList = new List<Character>();
     }
 
-    public void CreateCharacter(Map map, int X, int Y, int destinationX, int destinationY, string icon)
+    public void CreateCharacter(Map map, int x, int y, int destinationX, int destinationY)
     {
-        Character character = new Character(map, X, Y, destinationX, destinationY, icon);
+        Character character = new Character(map, x, y, destinationX, destinationY);
         charactersList.Add(character);
     }
 }

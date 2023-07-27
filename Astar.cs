@@ -146,9 +146,8 @@ public class Astar
         switch (map.map[tile.Y][tile.X])
         {
             case '*':
-                return 2f;
-            case 'A':
-                return 3f;
+                return 10f;
+
         }
 
         return 0f;

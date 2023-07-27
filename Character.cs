@@ -1,45 +1,54 @@
+using SFML.Graphics;
+using SFML.System;
+using TestProject;
+
 public class Character : Tile
 {
     public bool IsActive = true;
     public int DestinationX;
     public int DestinationY;
+    public RectangleShape shape;
+    
+    
+    
+    private string _icon="A";
+    private Tile _start;
+    private Tile _finish;
+    private Map _map;
+    private List<Tile> _path;
+    private List<Tuple<int, int>> _availableTilesList;
+    
+    private static int width = 100;
+    private static int height = 100;
 
-    private string icon;
-    private Tile start;
-    private Tile finish;
-    private Map map;
-    private List<Tile> path;
-    private List<Tuple<int, int>> availableTilesList;
-
-    public Character(Map map, int X, int Y, int destinationX, int destinationY, string icon)
+    public Character(Map map, int x, int y, int destinationX, int destinationY)
     {
-        this.map = map;
-        this.X = X;
-        this.Y = Y;
+        this._map = map;
+        this.X = x;
+        this.Y = y;
         this.DestinationX = destinationX;
         this.DestinationY = destinationY;
-        this.icon = icon;
-
-        start = map.PlaceTile(X, Y, icon);
-        finish = map.PlaceTile(destinationX, destinationY, "B");
+        _start = map.PlaceTile(x, y, _icon);
+        _finish = map.PlaceTile(destinationX, destinationY, "B");
         this.SetDistance(destinationX, destinationY);
-        this.path = CalculatePath();
+        this._path = CalculatePath();
+        shape = SfmlWindow.CreateSquare(x, y, width, height, SfmlWindow.worldMultiplier,Color.Red);
     }
 
     private void UpdatePath()
     {
-        start.X = X;
-        start.Y = Y;
+        _start.X = X;
+        _start.Y = Y;
         // Console.WriteLine($"Calculating new path with start coordinates x: {start.X} y:{start.Y}");
-        path = CalculatePath();
+        _path = CalculatePath();
 
         // Remove first is neccessary because if the first elemement is the current position of the character and it makes it move to the current place indefinetly
-        path.RemoveAt(0);
+        _path.RemoveAt(0);
         // WritePath();
         // map.PrintPath(CalculatePath());
-        if (path.Count() == 0)
+        if (_path.Count() == 0)
         {
-            Console.WriteLine($"Character {icon} became inactive");
+            Console.WriteLine($"Character {_icon} became inactive");
             IsActive = false;
         }
     }
@@ -48,30 +57,31 @@ public class Character : Tile
     {
         try
         {
-            Astar astar = new Astar(map);
-            List<Tile> path = astar.CalculatePath(start, finish);
+            Astar astar = new Astar(_map);
+            List<Tile> path = astar.CalculatePath(_start, _finish);
             path.Reverse();
             return path;
         }
         catch (NoPathFoundException)
         {
-            return this.path;
+            return this._path;
         }
     }
 
     private void Move(int moveToX, int moveToY)
     {
         // delete itself from the old position on the map
-        if (map.map[Y][X] == Char.Parse(icon))
+        if (_map.map[Y][X] == Char.Parse(_icon))
         {
-            map.PlaceOnMap(" ", X, Y);
+            _map.PlaceOnMap(" ", X, Y);
         }
 
         // update position
         this.X = moveToX;
         this.Y = moveToY;
         // redraw character
-        map.PlaceOnMap(icon, X, Y);
+        _map.PlaceOnMap(_icon, X, Y);
+        shape.Position = new Vector2f(X*SfmlWindow.worldMultiplier, Y*SfmlWindow.worldMultiplier);
         // map.PrintMap();
         // WritePath();
         // Console.WriteLine($"Character {icon}, moved to X {X},Y {Y}");
@@ -90,7 +100,7 @@ public class Character : Tile
 
         if (IsActive)
         {
-            Move(path[0].X, path[0].Y);
+            Move(_path[0].X, _path[0].Y);
             // After moving draw radius on new place
             DrawArea();
         }
@@ -100,9 +110,9 @@ public class Character : Tile
     {
         FindTilesAround();
         //Draw * around if tiles 
-        foreach (Tuple<int, int> tuple in availableTilesList)
+        foreach (Tuple<int, int> tuple in _availableTilesList)
         {
-            map.PlaceOnMap("*", tuple.Item1, tuple.Item2);
+            _map.PlaceOnMap("*", tuple.Item1, tuple.Item2);
         }
     }
 
@@ -110,24 +120,24 @@ public class Character : Tile
     {
         FindTilesAround();
         //Remove * around if they exist
-        foreach (Tuple<int, int> tuple in availableTilesList)
+        foreach (Tuple<int, int> tuple in _availableTilesList)
         {
-            map.PlaceOnMap(" ", tuple.Item1, tuple.Item2);
+            _map.PlaceOnMap(" ", tuple.Item1, tuple.Item2);
         }
     }
 
     private void FindTilesAround()
     {
         List<Tuple<int, int>> coordinatesList = CreateCoordinatesList();
-        availableTilesList = new List<Tuple<int, int>>();
+        _availableTilesList = new List<Tuple<int, int>>();
         //check if ' '
 
 
         foreach (Tuple<int, int> point in coordinatesList)
         {
-            if (map.TileAvailable(point.Item1, point.Item2))
+            if (_map.TileAvailable(point.Item1, point.Item2))
             {
-                availableTilesList.Add(new Tuple<int, int>(point.Item1, point.Item2));
+                _availableTilesList.Add(new Tuple<int, int>(point.Item1, point.Item2));
             }
         }
     }
@@ -149,9 +159,10 @@ public class Character : Tile
 
     private void WritePath()
     {
-        foreach (Tile tile in path)
+        foreach (Tile tile in _path)
         {
             Console.WriteLine($"X: {tile.X} Y:{tile.Y}");
         }
     }
+    
 }

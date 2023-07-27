@@ -2,12 +2,16 @@ using System.Text;
 
 public class Map
 {
+    public uint X;
+    public uint Y;
+    
     public List<string> map;
 
     public Map()
     {
         map = GenerateMap();
-        PrintMapSize();
+        X = PrintMapSize().Item1;
+        Y = PrintMapSize().Item2;
     }
 
     public static List<string> GenerateMap()
@@ -15,12 +19,13 @@ public class Map
         List<string> map = new List<string>
         {
             "                  ",
+            "          |       ",
+            "          |       ",
             "                  ",
-            "                  ",
-            "                  ",
-            "              ----",
-            "              |   ",
-            "       --------   ",
+            "        ----------",
+            "             |    ",
+            "             |    ",
+            "       ----  --   ",
             "                  ",
         };
         return map;
@@ -91,7 +96,7 @@ public class Map
             mapCopy[c] = modifiedString;
         }
 
-        mapCopy.ForEach(x => Console.WriteLine(x));
+        map.ForEach(x => Console.WriteLine(x));
     }
 
     public void PrintMap(List<string> mapToPrint)
@@ -179,9 +184,10 @@ public class Map
         map.ForEach(x => Console.WriteLine(x));
     }
 
-    public void PrintMapSize()
+    public Tuple<uint,uint> PrintMapSize()
     {
-        Console.WriteLine($"X is {map[0].Length - 1} Y is {map.Count - 1}");
+        //Console.WriteLine($"X is {map[0].Length - 1} Y is {map.Count - 1}");
+        return new Tuple<uint, uint>((uint)map[0].Length - 1, (uint)map.Count - 1);
     }
 
     public bool TileAvailable(int x, int y)
