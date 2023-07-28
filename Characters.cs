@@ -6,7 +6,7 @@ public class Characters
 
     public Characters()
     {
-        this._charactersList = new List<Character>();
+        _charactersList = new List<Character>();
     }
 
     public List<Character> GetCharactersList()

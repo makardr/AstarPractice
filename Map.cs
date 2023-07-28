@@ -8,27 +8,27 @@ public class Map
     private uint boundaryY;
 
     private List<string> map;
+    private List<List<Tile>> tileMap;
 
     public Map()
     {
         map = GenerateMap();
+        tileMap = GenerateTileMap();
         boundaryX = PrintMapSize().Item1;
         boundaryY = PrintMapSize().Item2;
-
-       //GenerateTileMap();
     }
 
-    public uint getBoundaryX()
+    public uint GetBoundaryX()
     {
         return boundaryX;
     }
 
-    public uint getBoundaryY()
+    public uint GetBoundaryY()
     {
         return boundaryY;
     }
 
-    public List<string> getMap()
+    public List<string> GetMap()
     {
         return map;
     }
@@ -52,27 +52,47 @@ public class Map
 
     private List<List<Tile>> GenerateTileMap()
     {
-        
         List<List<Tile>> tileMap = new List<List<Tile>>();
-        
-        for (int rowY = 0; rowY < getBoundaryY(); rowY++)
+
+        for (int rowY = 0; rowY < GetBoundaryY(); rowY++)
         {
             List<Tile> rowList = new List<Tile>();
-            for (int colX = 0; colX < (int)getBoundaryX(); colX++)
+            for (int colX = 0; colX < (int)GetBoundaryX(); colX++)
             {
-                Tile tile = new Tile();
-                tile.X = colX;
-                tile.Y = rowY;
-                tile.value = map[tile.Y][tile.X];
-                rowList.Add(tile);
+                if (map[rowY][colX] == ' ')
+                {
+                    Tile tile = new Tile();
+                    tile.X = colX;
+                    tile.Y = rowY;
+                    tile.value = map[tile.Y][tile.X];
+                    rowList.Add(tile);
+                }
+                else if (map[rowY][colX] == '|')
+                {
+                    Wall tile = new Wall();
+                    tile.X = colX;
+                    tile.Y = rowY;
+                    tile.value = map[tile.Y][tile.X];
+                    rowList.Add(tile);
+                }
+                else if (map[rowY][colX] == '-')
+                {
+                    Wall tile = new Wall();
+                    tile.X = colX;
+                    tile.Y = rowY;
+                    tile.value = map[tile.Y][tile.X];
+                    rowList.Add(tile);
+                }
             }
+
             tileMap.Add(rowList);
         }
+
         PrintMap(tileMap);
         return tileMap;
     }
 
-    public Tile PlaceTile(int x, int y, string tile)
+    public Tile PlaceTile(string tile, int x, int y)
     {
         IsInBoundaries(map, x, y);
         var start = new Tile();
@@ -80,6 +100,14 @@ public class Map
         start.Y = y;
         PlaceOnMap(tile, start.X, start.Y);
         return start;
+    }
+
+    public void PlaceTile(Tile tile, int x, int y)
+    {
+        IsInBoundaries(tileMap, x, y);
+        tile.X = x;
+        tile.Y = y;
+        PlaceOnMap(tile, tile.X, tile.Y);
     }
 
     public void PlaceOnMap(string obj, int x, int y)
@@ -106,6 +134,11 @@ public class Map
         //     PrintMap();
         //     //throw new ArgumentException($"Can not place object {obj} on the map, coordinates x:{x} y:{y} {map[y][x]} already here");
         // }
+    }
+
+    public void PlaceOnMap(Tile obj, int x, int y)
+    {
+        tileMap[y][x] = obj;
     }
 
     public void PlaceOnMap(string obj, int x, int y, List<string> mapCopy)
@@ -144,6 +177,7 @@ public class Map
     {
         mapToPrint.ForEach(x => Console.WriteLine(x));
     }
+
     private void PrintMap(List<List<Tile>> mapToPrint)
     {
         foreach (List<Tile> tileList in mapToPrint)
@@ -155,6 +189,7 @@ public class Map
             }
         }
     }
+
     private static void IsInBoundaries(List<string> map, int x, int y)
     {
         if (x < 0 | y < 0)
@@ -170,6 +205,36 @@ public class Map
             // Console.WriteLine($"{y} is in {listLength}");
 
             int lineLength = map[y].Length - 1;
+            if (lineLength >= x)
+            {
+                // Console.WriteLine($"{x} is in {lineLength}");
+            }
+            else
+            {
+                throw new ArgumentException($"{x} is not in {lineLength}");
+            }
+        }
+        else
+        {
+            throw new ArgumentException($"{y} is not in {listLength}");
+        }
+    }
+
+    private static void IsInBoundaries(List<List<Tile>> map, int x, int y)
+    {
+        if (x < 0 | y < 0)
+        {
+            throw new ArgumentException($"IsInBoundaries {x} or {y} less than zero");
+        }
+
+        // Count should begin from 0
+        int listLength = map.Count - 1;
+
+        if (listLength >= y)
+        {
+            // Console.WriteLine($"{y} is in {listLength}");
+
+            int lineLength = map[y].Count - 1;
             if (lineLength >= x)
             {
                 // Console.WriteLine($"{x} is in {lineLength}");

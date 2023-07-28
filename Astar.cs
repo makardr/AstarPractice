@@ -1,3 +1,5 @@
+using TestProject.Exceptions;
+
 namespace AstarPractice;
 
 // G cost = distance from starting node
@@ -132,20 +134,20 @@ public class Astar
 
         possibleTiles.ForEach(tile => tile.SetDistance(targetTile.X, targetTile.Y));
 
-        var maxX = map.getMap().First().Length - 1;
-        var maxY = map.getMap().Count - 1;
+        var maxX = map.GetMap().First().Length - 1;
+        var maxY = map.GetMap().Count - 1;
 
         return possibleTiles
             .Where(tile => tile.X >= 0 && tile.X <= maxX)
             .Where(tile => tile.Y >= 0 && tile.Y <= maxY)
-            .Where(tile => map.getMap()[tile.Y][tile.X] == ' ' || map.getMap()[tile.Y][tile.X] == 'B' ||
-                           map.getMap()[tile.Y][tile.X] == '*')
+            .Where(tile => map.GetMap()[tile.Y][tile.X] == ' ' || map.GetMap()[tile.Y][tile.X] == 'B' ||
+                           map.GetMap()[tile.Y][tile.X] == '*')
             .ToList();
     }
 
     private float CalculateCost(Tile tile)
     {
-        switch (map.getMap()[tile.Y][tile.X])
+        switch (map.GetMap()[tile.Y][tile.X])
         {
             case '*':
                 return 10f;

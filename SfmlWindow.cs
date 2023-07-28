@@ -35,7 +35,7 @@ public class SfmlWindow
         // Create the SFML window
         window =
             new RenderWindow(
-                new VideoMode(map.getBoundaryX() * worldMultiplier + worldMultiplier, map.getBoundaryY() * worldMultiplier + worldMultiplier),
+                new VideoMode(map.GetBoundaryX() * worldMultiplier + worldMultiplier, map.GetBoundaryY() * worldMultiplier + worldMultiplier),
                 "Astar pathfinding");
         window.Closed += (sender, e) => window.Close();
 
@@ -109,7 +109,7 @@ public class SfmlWindow
     private void PopulateDrawablesList()
     {
         int y = 0;
-        foreach (string line in map.getMap())
+        foreach (string line in map.GetMap())
         {
             int x = 0;
             foreach (char ch in line)
@@ -144,6 +144,6 @@ public class SfmlWindow
             character.MakeStep();
         }
         map.PrintMap();
-        Console.WriteLine(new string('-',(int)map.getBoundaryX()));
+        Console.WriteLine(new string('-',(int)map.GetBoundaryX()));
     }
 }

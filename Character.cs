@@ -1,3 +1,5 @@
+using TestProject.Exceptions;
+
 namespace AstarPractice;
 
 using SFML.Graphics;
@@ -6,10 +8,8 @@ using SFML.System;
 public class Character : Tile
 {
     public bool IsActive = true;
-
     public readonly RectangleShape Shape;
-
-
+    
     private int _destinationX;
     private int _destinationY;
     private string _icon = "A";
@@ -24,15 +24,15 @@ public class Character : Tile
 
     public Character(Map map, int x, int y, int destinationX, int destinationY)
     {
-        this._map = map;
-        this.X = x;
-        this.Y = y;
-        this._destinationX = destinationX;
-        this._destinationY = destinationY;
-        _start = map.PlaceTile(x, y, _icon);
-        _finish = map.PlaceTile(destinationX, destinationY, "B");
-        this.SetDistance(destinationX, destinationY);
-        this._path = CalculatePath();
+        _map = map;
+        X = x;
+        Y = y;
+        _destinationX = destinationX;
+        _destinationY = destinationY;
+        _start = map.PlaceTile(_icon,x, y );
+        _finish = map.PlaceTile("B",destinationX, destinationY );
+        SetDistance(destinationX, destinationY);
+        _path = CalculatePath();
         Shape = SfmlWindow.CreateSquare(x, y, _width, _height, SfmlWindow.worldMultiplier, Color.Red);
     }
 
@@ -47,7 +47,7 @@ public class Character : Tile
         _path.RemoveAt(0);
         // WritePath();
         // map.PrintPath(CalculatePath());
-        if (_path.Count() == 0)
+        if (!_path.Any())
         {
             Console.WriteLine($"Character {_icon} became inactive");
             IsActive = false;
@@ -65,22 +65,22 @@ public class Character : Tile
         }
         catch (NoPathFoundException)
         {
-            return this._path;
+            return _path;
         }
     }
 
     private void Move(int moveToX, int moveToY)
     {
         // delete itself from the old position on the map
-        if (_map.getMap()[Y][X] == Char.Parse(_icon))
+        if (_map.GetMap()[Y][X] == Char.Parse(_icon))
         {
             _map.PlaceOnMap(" ", X, Y);
         }
 
 
         // update position
-        this.X = moveToX;
-        this.Y = moveToY;
+        X = moveToX;
+        Y = moveToY;
         // redraw character
         _map.PlaceOnMap(_icon, X, Y);
         Shape.Position = new Vector2f(X * SfmlWindow.worldMultiplier, Y * SfmlWindow.worldMultiplier);
@@ -91,8 +91,10 @@ public class Character : Tile
 
     public void MakeStep()
     {
-        // Two IsActive checks are necessary because first updates IsActive state and if they were in the same if statement character would react at being Inactive too late
-        // and would attempt to move crashing the game. First IsActive is to improve performance by removing unnecessary calculations
+        //Two IsActive checks are necessary to ensure the correct behavior of the character in the game. The first check updates the IsActive state,
+        //and if both checks were combined into the same if statement, the character would react to being inactive too late, which could result in
+        //a game crash due to attempted movement. The purpose of the first IsActive check is to optimize performance by avoiding unnecessary
+        //calculations.
         if (IsActive)
         {
             // Before is active to delete tiles at an old place
