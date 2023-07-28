@@ -14,6 +14,8 @@ public class Map
         map = GenerateMap();
         boundaryX = PrintMapSize().Item1;
         boundaryY = PrintMapSize().Item2;
+
+       //GenerateTileMap();
     }
 
     public uint getBoundaryX()
@@ -48,12 +50,25 @@ public class Map
         return map;
     }
 
-    private static List<List<Tile>> GenerateMapWithTiles()
+    private List<List<Tile>> GenerateTileMap()
     {
-        List<string> map = GenerateMap();
+        
         List<List<Tile>> tileMap = new List<List<Tile>>();
-
-
+        
+        for (int rowY = 0; rowY < getBoundaryY(); rowY++)
+        {
+            List<Tile> rowList = new List<Tile>();
+            for (int colX = 0; colX < (int)getBoundaryX(); colX++)
+            {
+                Tile tile = new Tile();
+                tile.X = colX;
+                tile.Y = rowY;
+                tile.value = map[tile.Y][tile.X];
+                rowList.Add(tile);
+            }
+            tileMap.Add(rowList);
+        }
+        PrintMap(tileMap);
         return tileMap;
     }
 
@@ -129,7 +144,17 @@ public class Map
     {
         mapToPrint.ForEach(x => Console.WriteLine(x));
     }
-
+    private void PrintMap(List<List<Tile>> mapToPrint)
+    {
+        foreach (List<Tile> tileList in mapToPrint)
+        {
+            Console.WriteLine();
+            foreach (Tile tile in tileList)
+            {
+                Console.Write(tile.value);
+            }
+        }
+    }
     private static void IsInBoundaries(List<string> map, int x, int y)
     {
         if (x < 0 | y < 0)

@@ -9,6 +9,8 @@ public class Tile
     public float CostDistance => Cost + Distance;
     public Tile Parent { get; set; }
 
+    public char value { get; set; }
+
     //The distance is essentially the estimated distance, ignoring walls to our target. 
     //So how many tiles left and right, up and down, ignoring walls, to get there. 
     public void SetDistance(int targetX, int targetY)
