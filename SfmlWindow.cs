@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic;
-
-namespace TestProject;
+﻿namespace AstarPractice;
 
 using SFML.Graphics;
 using SFML.System;
@@ -32,18 +30,14 @@ public class SfmlWindow
     }
 
 
-    public void InitializeWindow()
+    private void InitializeWindow()
     {
         // Create the SFML window
         window =
             new RenderWindow(
-                new VideoMode(map.X * worldMultiplier + worldMultiplier, map.Y * worldMultiplier + worldMultiplier),
-                "SFML Square");
+                new VideoMode(map.getBoundaryX() * worldMultiplier + worldMultiplier, map.getBoundaryY() * worldMultiplier + worldMultiplier),
+                "Astar pathfinding");
         window.Closed += (sender, e) => window.Close();
-        // Create a rectangle shape for the square
-
-        //RectangleShape square = CreateSquare();
-
 
         // Create a clock to measure the elapsed time
         Clock clock = new Clock();
@@ -74,12 +68,7 @@ public class SfmlWindow
 
 
                 UpdateEntities();
-                DrawWorld();
             }
-
-            // Move the square to the left
-            //square.Position -= new Vector2f(0, 100);
-            //square.Position -= new Vector2f(movementSpeed * deltaTime, 0);
 
             // Clear the window
             window.Clear();
@@ -103,16 +92,16 @@ public class SfmlWindow
         return square;
     }
 
-    public void DrawWorld()
+    private void DrawWorld()
     {
         foreach (Shape shape in drawableStaticShapesList)
         {
             window.Draw(shape);
         }
 
-        foreach (Character character in characters.charactersList)
+        foreach (Character character in characters.GetCharactersList())
         {
-            window.Draw(character.shape);
+            window.Draw(character.Shape);
         }
     }
 
@@ -120,7 +109,7 @@ public class SfmlWindow
     private void PopulateDrawablesList()
     {
         int y = 0;
-        foreach (string line in map.map)
+        foreach (string line in map.getMap())
         {
             int x = 0;
             foreach (char ch in line)
@@ -145,17 +134,16 @@ public class SfmlWindow
 
     private void UpdateEntities()
     {
-        if (!characters.charactersList.Any(obj => obj.IsActive))
+        if (!characters.GetCharactersList().Any(obj => obj.IsActive))
         {
             Console.WriteLine("Pathfinding finished");
-            //break;
         }
 
-
-        foreach (Character character in characters.charactersList)
+        foreach (Character character in characters.GetCharactersList())
         {
             character.MakeStep();
-            map.PrintMap();
         }
+        map.PrintMap();
+        Console.WriteLine(new string('-',(int)map.getBoundaryX()));
     }
 }

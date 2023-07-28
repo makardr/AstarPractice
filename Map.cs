@@ -1,20 +1,37 @@
+namespace AstarPractice;
+
 using System.Text;
 
 public class Map
 {
-    public uint X;
-    public uint Y;
-    
-    public List<string> map;
+    private uint boundaryX;
+    private uint boundaryY;
+
+    private List<string> map;
 
     public Map()
     {
         map = GenerateMap();
-        X = PrintMapSize().Item1;
-        Y = PrintMapSize().Item2;
+        boundaryX = PrintMapSize().Item1;
+        boundaryY = PrintMapSize().Item2;
     }
 
-    public static List<string> GenerateMap()
+    public uint getBoundaryX()
+    {
+        return boundaryX;
+    }
+
+    public uint getBoundaryY()
+    {
+        return boundaryY;
+    }
+
+    public List<string> getMap()
+    {
+        return map;
+    }
+
+    private static List<string> GenerateMap()
     {
         List<string> map = new List<string>
         {
@@ -29,6 +46,15 @@ public class Map
             "                  ",
         };
         return map;
+    }
+
+    private static List<List<Tile>> GenerateMapWithTiles()
+    {
+        List<string> map = GenerateMap();
+        List<List<Tile>> tileMap = new List<List<Tile>>();
+
+
+        return tileMap;
     }
 
     public Tile PlaceTile(int x, int y, string tile)
@@ -99,12 +125,12 @@ public class Map
         map.ForEach(x => Console.WriteLine(x));
     }
 
-    public void PrintMap(List<string> mapToPrint)
+    private void PrintMap(List<string> mapToPrint)
     {
         mapToPrint.ForEach(x => Console.WriteLine(x));
     }
 
-    public static void IsInBoundaries(List<string> map, int x, int y)
+    private static void IsInBoundaries(List<string> map, int x, int y)
     {
         if (x < 0 | y < 0)
         {
@@ -134,7 +160,7 @@ public class Map
         }
     }
 
-    public bool IsInBoundaries(int x, int y)
+    private bool IsInBoundaries(int x, int y)
     {
         if (x < 0 | y < 0)
         {
@@ -151,15 +177,9 @@ public class Map
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     public void PrintPath(List<Tile> path)
@@ -184,7 +204,7 @@ public class Map
         map.ForEach(x => Console.WriteLine(x));
     }
 
-    public Tuple<uint,uint> PrintMapSize()
+    private Tuple<uint, uint> PrintMapSize()
     {
         //Console.WriteLine($"X is {map[0].Length - 1} Y is {map.Count - 1}");
         return new Tuple<uint, uint>((uint)map[0].Length - 1, (uint)map.Count - 1);

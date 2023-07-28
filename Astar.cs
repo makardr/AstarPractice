@@ -1,10 +1,12 @@
+namespace AstarPractice;
+
 // G cost = distance from starting node
 // H cost = distance from end node
 // F cost = G cost + F cost
 
 public class Astar
 {
-    public Map map;
+    private Map map;
 
     public Astar(Map map)
     {
@@ -130,24 +132,23 @@ public class Astar
 
         possibleTiles.ForEach(tile => tile.SetDistance(targetTile.X, targetTile.Y));
 
-        var maxX = map.map.First().Length - 1;
-        var maxY = map.map.Count - 1;
-        //
+        var maxX = map.getMap().First().Length - 1;
+        var maxY = map.getMap().Count - 1;
+
         return possibleTiles
             .Where(tile => tile.X >= 0 && tile.X <= maxX)
             .Where(tile => tile.Y >= 0 && tile.Y <= maxY)
-            .Where(tile => map.map[tile.Y][tile.X] == ' ' || map.map[tile.Y][tile.X] == 'B' ||
-                           map.map[tile.Y][tile.X] == '*')
+            .Where(tile => map.getMap()[tile.Y][tile.X] == ' ' || map.getMap()[tile.Y][tile.X] == 'B' ||
+                           map.getMap()[tile.Y][tile.X] == '*')
             .ToList();
     }
 
     private float CalculateCost(Tile tile)
     {
-        switch (map.map[tile.Y][tile.X])
+        switch (map.getMap()[tile.Y][tile.X])
         {
             case '*':
                 return 10f;
-
         }
 
         return 0f;

@@ -1,3 +1,5 @@
+namespace AstarPractice;
+
 public class Tile
 {
     public int X { get; set; }

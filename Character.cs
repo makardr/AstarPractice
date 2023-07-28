@@ -1,38 +1,39 @@
+namespace AstarPractice;
+
 using SFML.Graphics;
 using SFML.System;
-using TestProject;
 
 public class Character : Tile
 {
     public bool IsActive = true;
-    public int DestinationX;
-    public int DestinationY;
-    public RectangleShape shape;
-    
-    
-    
-    private string _icon="A";
+
+    public readonly RectangleShape Shape;
+
+
+    private int _destinationX;
+    private int _destinationY;
+    private string _icon = "A";
     private Tile _start;
     private Tile _finish;
     private Map _map;
     private List<Tile> _path;
     private List<Tuple<int, int>> _availableTilesList;
-    
-    private static int width = 100;
-    private static int height = 100;
+
+    private static int _width = 100;
+    private static int _height = 100;
 
     public Character(Map map, int x, int y, int destinationX, int destinationY)
     {
         this._map = map;
         this.X = x;
         this.Y = y;
-        this.DestinationX = destinationX;
-        this.DestinationY = destinationY;
+        this._destinationX = destinationX;
+        this._destinationY = destinationY;
         _start = map.PlaceTile(x, y, _icon);
         _finish = map.PlaceTile(destinationX, destinationY, "B");
         this.SetDistance(destinationX, destinationY);
         this._path = CalculatePath();
-        shape = SfmlWindow.CreateSquare(x, y, width, height, SfmlWindow.worldMultiplier,Color.Red);
+        Shape = SfmlWindow.CreateSquare(x, y, _width, _height, SfmlWindow.worldMultiplier, Color.Red);
     }
 
     private void UpdatePath()
@@ -71,17 +72,18 @@ public class Character : Tile
     private void Move(int moveToX, int moveToY)
     {
         // delete itself from the old position on the map
-        if (_map.map[Y][X] == Char.Parse(_icon))
+        if (_map.getMap()[Y][X] == Char.Parse(_icon))
         {
             _map.PlaceOnMap(" ", X, Y);
         }
+
 
         // update position
         this.X = moveToX;
         this.Y = moveToY;
         // redraw character
         _map.PlaceOnMap(_icon, X, Y);
-        shape.Position = new Vector2f(X*SfmlWindow.worldMultiplier, Y*SfmlWindow.worldMultiplier);
+        Shape.Position = new Vector2f(X * SfmlWindow.worldMultiplier, Y * SfmlWindow.worldMultiplier);
         // map.PrintMap();
         // WritePath();
         // Console.WriteLine($"Character {icon}, moved to X {X},Y {Y}");
@@ -164,5 +166,4 @@ public class Character : Tile
             Console.WriteLine($"X: {tile.X} Y:{tile.Y}");
         }
     }
-    
 }

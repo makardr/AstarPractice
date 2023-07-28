@@ -1,4 +1,4 @@
-﻿using TestProject;
+﻿namespace AstarPractice;
 
 class Program
 {
